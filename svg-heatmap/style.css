@@ -1,0 +1,229 @@
+/* SVG heatmap (lab). Palettes are five levels each; the wave is a pulse delayed by --d. */
+@layer components {
+  .hm {
+    --l0: rgb(255 255 255 / 0.06);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .hm[data-palette='gold'] {
+    --l1: color-mix(in oklab, var(--color-gold) 30%, var(--color-bg-deep));
+    --l2: color-mix(in oklab, var(--color-gold) 55%, var(--color-bg-deep));
+    --l3: color-mix(in oklab, var(--color-gold) 80%, var(--color-bg-deep));
+    --l4: var(--color-gold-text);
+  }
+
+  .hm[data-palette='blue'] {
+    --l1: color-mix(in oklab, var(--color-annotation-blue) 30%, var(--color-bg-deep));
+    --l2: color-mix(in oklab, var(--color-annotation-blue) 55%, var(--color-bg-deep));
+    --l3: color-mix(in oklab, var(--color-annotation-blue) 85%, var(--color-bg-deep));
+    --l4: color-mix(in oklab, var(--color-annotation-blue) 60%, var(--color-display-cream));
+  }
+
+  .hm[data-palette='green'] {
+    --l1: color-mix(in oklab, var(--color-lab-ok) 25%, var(--color-bg-deep));
+    --l2: color-mix(in oklab, var(--color-lab-ok) 50%, var(--color-bg-deep));
+    --l3: color-mix(in oklab, var(--color-lab-ok) 78%, var(--color-bg-deep));
+    --l4: color-mix(in oklab, var(--color-lab-ok) 70%, var(--color-display-cream));
+  }
+
+  .hm__hint {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-small);
+  }
+
+  /*
+   * The frame and, beside it, the tooltip (positioned against this, not the scrolling frame). It
+   * does not scroll itself: without min-width it would take the year's 760 px and widen the piece
+   * on a phone, instead of letting the frame scroll.
+   */
+  .hm__plot {
+    position: relative;
+    min-width: 0;
+  }
+
+  /* Narrow screens scroll the year sideways instead of shrinking the cells to dots. */
+  .hm__frame {
+    overflow-x: auto;
+    padding: 6px 2px;
+  }
+
+  .hm__grid {
+    display: block;
+    width: 100%;
+    min-width: 760px;
+    height: auto;
+    overflow: visible;
+    border-radius: 4px;
+  }
+
+  .hm__cell {
+    fill: var(--l0);
+    transition: fill 500ms var(--ease-out);
+    transform-box: fill-box;
+    transform-origin: center;
+    cursor: pointer;
+  }
+
+  .hm__cell[data-level='1'] {
+    fill: var(--l1);
+  }
+
+  .hm__cell[data-level='2'] {
+    fill: var(--l2);
+  }
+
+  .hm__cell[data-level='3'] {
+    fill: var(--l3);
+  }
+
+  .hm__cell[data-level='4'] {
+    fill: var(--l4);
+  }
+
+  .hm__cell[data-future] {
+    fill: transparent;
+    cursor: default;
+  }
+
+  .hm[data-wave] .hm__cell {
+    animation: hm-pulse 650ms var(--ease-out) var(--d, 0ms) both;
+  }
+
+  @keyframes hm-pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    35% {
+      transform: scale(1.45);
+      filter: brightness(1.6);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .hm__cursor {
+    fill: none;
+    stroke: var(--color-gold-text);
+    stroke-width: 2;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hm__grid:focus-visible .hm__cursor {
+    opacity: 1;
+  }
+
+  .hm__tip {
+    position: absolute;
+    z-index: 2;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--color-ink);
+    color: var(--color-display-cream);
+    font-size: var(--size-meta);
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.4);
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 8px));
+  }
+
+  .hm__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 16px 28px;
+  }
+
+  .hm__choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .hm__choice legend {
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  /* Segmented choices: the radio stays (for the keyboard and screen readers), its label is the pill. */
+  .hm__choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hm__choice label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: var(--radius-pill);
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+    cursor: pointer;
+    transition:
+      background 250ms var(--ease-out),
+      color 250ms var(--ease-out);
+  }
+
+  .hm__choice input:checked + label {
+    border-color: transparent;
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  .hm__choice input:focus-visible + label {
+    outline: 3px solid var(--color-gold-text);
+    outline-offset: 2px;
+  }
+
+  .hm__legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-inline-start: auto;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .hm__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2.5px;
+    background: var(--l0);
+  }
+
+  .hm__swatch[data-level='1'] {
+    background: var(--l1);
+  }
+
+  .hm__swatch[data-level='2'] {
+    background: var(--l2);
+  }
+
+  .hm__swatch[data-level='3'] {
+    background: var(--l3);
+  }
+
+  .hm__swatch[data-level='4'] {
+    background: var(--l4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hm__cell,
+    .hm__choice label {
+      transition: none;
+    }
+  }
+}

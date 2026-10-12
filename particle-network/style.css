@@ -1,0 +1,93 @@
+/* Particle network (lab). */
+@layer components {
+  .pn {
+    display: grid;
+    gap: 16px;
+  }
+
+  .pn__frame {
+    position: relative;
+    height: clamp(300px, 56cqi, 480px);
+    overflow: hidden;
+    border-radius: 12px;
+    background: radial-gradient(
+      ellipse at 50% 40%,
+      color-mix(in oklab, var(--color-lab-panel) 70%, var(--color-annotation-blue)),
+      var(--color-bg-deep) 70%
+    );
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+
+  .pn__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: pan-y;
+  }
+
+  .pn__controls {
+    display: grid;
+    gap: 12px 24px;
+    align-items: end;
+  }
+
+  .pn__control {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .pn__range {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    min-height: 32px;
+    accent-color: var(--color-gold);
+  }
+
+  .pn__value {
+    color: var(--color-display-cream);
+    font-size: var(--size-meta);
+  }
+
+  .pn__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pn__button {
+    min-width: 112px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-display-cream);
+    font-size: var(--size-small);
+    cursor: pointer;
+  }
+
+  .pn__button--gold {
+    border: 0;
+    background: linear-gradient(100deg, var(--color-gold-button-from), var(--color-gold-button-to));
+    color: var(--color-button-text);
+    font-weight: 600;
+  }
+
+  .pn__stats {
+    min-height: 1.4em;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @container lab-stage (width >= 640px) {
+    .pn__controls {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+  }
+}

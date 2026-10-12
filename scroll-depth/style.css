@@ -1,0 +1,227 @@
+/*
+ * Scroll depth (lab). The scroller names its timeline (--sd-scroll); every layer runs the same
+ * keyframes on it, each scaled by its --speed. No JavaScript moves anything.
+ */
+@layer components {
+  .sd {
+    display: grid;
+    gap: 14px;
+  }
+
+  .sd__hint,
+  .sd__unsupported {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-small);
+  }
+
+  .sd__unsupported {
+    padding: 10px 14px;
+    border-left: 3px solid var(--color-gold);
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .sd__scroller {
+    --travel: 220px;
+    height: clamp(320px, 52cqi, 460px);
+    overflow-y: auto;
+    border-radius: 12px;
+    scroll-timeline: --sd-scroll block;
+    overscroll-behavior: contain;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+
+  .sd__track {
+    height: 320%;
+  }
+
+  .sd__view {
+    position: sticky;
+    top: 0;
+    height: clamp(320px, 52cqi, 460px);
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .sd__sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-annotation-blue) 45%, var(--color-paper)),
+      var(--color-paper) 55%,
+      color-mix(in oklab, var(--color-gold-text) 60%, var(--color-paper))
+    );
+  }
+
+  .sd__layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /*
+   * Only where the browser has scroll-driven animations: elsewhere an animation with no timeline
+   * would run on the document's clock and stay on its last frame. Without them, the layers keep
+   * their resting pose. The timing function stays a var(): without one the CSS minifier folds
+   * the timeline into the `animation` shorthand, which browsers reject.
+   */
+  @supports (animation-timeline: scroll()) {
+    .sd__layer {
+      --sd-ease: linear;
+      animation: sd-travel linear both;
+      animation-timing-function: var(--sd-ease);
+      animation-timeline: --sd-scroll;
+    }
+
+    .sd__sun {
+      animation-name: sd-sun;
+    }
+
+    .sd__bar-fill {
+      --sd-ease: linear;
+      animation: sd-fill linear both;
+      animation-timing-function: var(--sd-ease);
+      animation-timeline: --sd-scroll;
+    }
+  }
+
+  /* Down to up: the near ridges rise over the far ones, the sun sinks behind them. */
+  @keyframes sd-travel {
+    from {
+      translate: 0 calc(var(--travel) * var(--speed) * 0.2);
+    }
+
+    to {
+      translate: 0 calc(var(--travel) * var(--speed) * -1);
+    }
+  }
+
+  .sd__layer svg {
+    position: absolute;
+    inset: auto 0 -30% 0;
+    width: 100%;
+    height: 130%;
+  }
+
+  .sd__ridge--1 path {
+    fill: color-mix(in oklab, var(--color-annotation-blue) 35%, var(--color-paper));
+  }
+
+  .sd__ridge--2 path {
+    fill: var(--color-annotation-blue);
+  }
+
+  .sd__ridge--3 path {
+    fill: color-mix(in oklab, var(--color-annotation-blue) 45%, var(--color-bg-dark));
+  }
+
+  .sd__ridge--4 path {
+    fill: var(--color-bg-dark);
+  }
+
+  /* Paper cut: each sheet casts a soft shadow on the one behind. */
+  .sd__ridge svg {
+    filter: drop-shadow(0 -4px 6px rgb(0 0 0 / 0.18));
+  }
+
+  .sd__sun span {
+    position: absolute;
+    top: 18%;
+    left: 64%;
+    width: 16%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 40% 35%,
+      var(--color-gold-button-from),
+      var(--color-gold)
+    );
+    box-shadow: 0 0 60px color-mix(in oklab, var(--color-gold) 70%, transparent);
+  }
+
+  @keyframes sd-sun {
+    to {
+      translate: 0 calc(var(--travel) * 0.9);
+    }
+  }
+
+  /* The timelines: one bar per layer, filled by the same scroll, as long as its speed. */
+  .sd__bars {
+    position: absolute;
+    inset: auto 12px 12px;
+    display: grid;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgb(13 19 19 / 0.82);
+    opacity: 0;
+    translate: 0 8px;
+    transition:
+      opacity 300ms var(--ease-out),
+      translate 300ms var(--ease-out);
+  }
+
+  .sd__scroller[data-timelines] .sd__bars {
+    opacity: 1;
+    translate: 0;
+  }
+
+  .sd__bar {
+    display: grid;
+    grid-template-columns: 9.5em minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sd__bar-label {
+    color: var(--color-on-dark);
+    font-size: 11.5px;
+  }
+
+  .sd__bar-track {
+    width: calc(var(--speed) * 100%);
+    height: 6px;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .sd__bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-gold);
+    transform-origin: left;
+  }
+
+  @keyframes sd-fill {
+    from {
+      scale: 0 1;
+    }
+  }
+
+  .sd__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+    cursor: pointer;
+  }
+
+  .sd__check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sd__layer,
+    .sd__bar-fill {
+      animation: none;
+    }
+
+    .sd__bars {
+      transition: none;
+    }
+  }
+}
