@@ -1,0 +1,87 @@
+/*
+ * What the site's base styles give the pieces, scoped to their stage so nothing leaks into the
+ * page around it: the order of the cascade layers (the pieces' CSS lives in `components`, so it
+ * wins over this whatever the selectors), a small reset, the stage's text, the focus ring and two
+ * utilities (.t-mono, .visually-hidden). Load it before any piece mounts.
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+@layer reset {
+  .lab-stage,
+  .lab-stage *,
+  .lab-stage *::before,
+  .lab-stage *::after {
+    box-sizing: border-box;
+  }
+
+  .lab-stage * {
+    margin: 0;
+  }
+
+  .lab-stage :is(img, picture, video, canvas, svg) {
+    display: block;
+    max-width: 100%;
+  }
+
+  .lab-stage :is(input, button, textarea, select) {
+    font: inherit;
+    color: inherit;
+  }
+
+  .lab-stage button {
+    cursor: pointer;
+  }
+
+  .lab-stage :is(ul, ol)[role='list'] {
+    list-style: none;
+    padding: 0;
+  }
+
+  .lab-stage :is(p, h1, h2, h3, h4, li) {
+    overflow-wrap: break-word;
+  }
+}
+
+@layer base {
+  /* Dark native controls (pickers, selects, scrollbars) and the site's text. */
+  .lab-stage {
+    color-scheme: dark;
+    accent-color: var(--color-gold);
+    font-family: var(--font-text);
+    font-weight: var(--font-text-weight, 400);
+    font-stretch: var(--font-text-stretch, 100%);
+    font-size: var(--size-body);
+    /* Explicit line heights everywhere: Safari ignores ascent-override in metric fallbacks. */
+    line-height: var(--metric-body-pitch);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .lab-stage :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .lab-stage .t-mono {
+    font-family: var(--font-mono);
+    font-weight: var(--font-mono-weight, 400);
+    font-size: var(--size-code);
+    line-height: 1.6;
+  }
+}
+
+@layer utilities {
+  /* Out of sight, still read by screen readers (live regions, «passes / fails»). */
+  .lab-stage .visually-hidden:not(:focus):not(:active) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}

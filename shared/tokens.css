@@ -1,0 +1,74 @@
+/*
+ * Every custom property the pieces read, with the values of andresmoreno.dev, so they look the
+ * same as on the site. Restyle a piece by redefining these (on :root or on its .lab-stage).
+ *
+ * Colours are hex on purpose: the contrast checker and the particle network read some of them
+ * with getComputedStyle and parse them (contrast-checker/index.ts, particle-network/index.ts).
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+@layer tokens {
+  :root {
+    /* Surfaces. */
+    --color-bg-dark: #121716;
+    --color-bg-deep: #0d1313;
+    --color-paper: #f2e7d4;
+    /* Lab stage: top of its gradient into --color-bg-deep. */
+    --color-lab-panel: #182024;
+
+    /* Text: ink on the paper, on-dark on the dark surfaces, cream for what stands out. */
+    --color-ink: #0b0a09;
+    --color-ink-muted: #67635c;
+    --color-on-dark: #c4c7c8;
+    --color-on-dark-muted: #adafaf;
+    --color-display-cream: #fbf6e9;
+
+    /*
+     * Gold. --color-gold is the decorative one (rings, fills, the focus ring on dark); text in gold
+     * on the dark surfaces is --color-gold-text. Buttons run from -from to -to.
+     */
+    --color-gold: #d6a35f;
+    --color-gold-text: #fccb8c;
+    --color-gold-button-from: #edc593;
+    --color-gold-button-to: #d4aa74;
+    --color-button-text: #2d2420;
+    --color-annotation-blue: #6a9cb5;
+
+    /* Pass and fail marks on the dark stage, both ≥ 3:1 on it; errors. */
+    --color-lab-ok: #8fd694;
+    --color-lab-bad: #f08a7a;
+    --color-error: #c0392b;
+    --color-error-text: #ffb4a8;
+
+    /* Code on the dark panels. */
+    --color-code-plain: #e6e1d4;
+
+    /* Type: the families (index.html loads them; each stack falls back to the system's). */
+    --font-display: 'Playfair', Georgia, 'Times New Roman', serif;
+    --font-text: 'Cabin', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --font-mono: 'Fira Code', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    --font-text-weight: 600;
+    --font-text-stretch: 87.5%;
+    --font-mono-weight: 700;
+
+    /* Type: sizes and the body's line pitch. */
+    --size-body: 15.5px;
+    --size-small: 14.5px;
+    --size-meta: 13px;
+    --size-code: 12px;
+    --metric-body-pitch: 22px;
+
+    /* Shape and motion. */
+    --radius-pill: 999px;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Focus ring: gold on the dark surfaces (≥ 3:1, WCAG 1.4.11). */
+    --focus: var(--color-gold);
+
+    /*
+     * The height of a fixed header above the pieces: the SDC generator's files stick below it on
+     * a wide stage. The site's header; set your own (0px without one).
+     */
+    --header-h: clamp(64px, 5vw, 72px);
+  }
+}

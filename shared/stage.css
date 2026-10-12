@@ -1,0 +1,53 @@
+/*
+ * The stage of a lab piece: the dark window it mounts in. The pieces lay themselves out with
+ * `@container lab-stage` queries, so the element a piece mounts in is a .lab-stage.
+ */
+@layer components {
+  /* A size container: each piece lays itself out by the stage's width, not the viewport's. */
+  .lab-stage {
+    --focus: var(--color-gold);
+    container: lab-stage / inline-size;
+    position: relative;
+    min-height: 320px;
+    padding: clamp(16px, 4cqi, 32px);
+    border-radius: 16px;
+    background: linear-gradient(160deg, var(--color-lab-panel), var(--color-bg-deep));
+    color: var(--color-on-dark);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.06) inset,
+      0 24px 48px rgb(0 0 0 / 0.35);
+  }
+
+  /* Until the piece arrives: a soft sweep, so the stage never looks broken. */
+  .lab-stage:not([data-mounted])::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.04) 50%,
+      transparent 70%
+    );
+    background-size: 250% 100%;
+    animation: lab-stage-wait 1.6s linear infinite;
+  }
+
+  @keyframes lab-stage-wait {
+    to {
+      background-position: -150% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lab-stage:not([data-mounted])::before {
+      animation: none;
+    }
+  }
+
+  .lab-stage__noscript {
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+}
