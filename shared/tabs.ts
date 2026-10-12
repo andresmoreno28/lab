@@ -23,9 +23,11 @@ export interface Tabs {
 
 export function enhanceTabs(tablist: HTMLElement, options: TabsOptions = {}): Tabs {
   const tabs = [...tablist.querySelectorAll<HTMLElement>('[role="tab"]')];
-  const panels = tabs.map((tab) =>
-    document.getElementById(tab.getAttribute('aria-controls') ?? ''),
-  );
+  // Found on each selection, not once here: a tablist may be enhanced before it and its panels
+  // are in the document (the accessible-tabs piece builds them first), and then they are not
+  // found by id yet.
+  const panels = () =>
+    tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls') ?? ''));
   const indicator = tablist.querySelector<HTMLElement>('[data-tab-indicator]');
   let automatic = options.automatic ?? true;
   let selected = Math.max(
@@ -49,8 +51,9 @@ export function enhanceTabs(tablist: HTMLElement, options: TabsOptions = {}): Ta
     });
     // Tabs may share one panel (the site's home window). Each panel is set once, and the one that
     // stays shown is never hidden on the way: hiding it, even for a moment, blurs its focus.
-    const shown = panels[selected];
-    for (const panel of new Set(panels)) if (panel) panel.hidden = panel !== shown;
+    const all = panels();
+    const shown = all[selected];
+    for (const panel of new Set(all)) if (panel) panel.hidden = panel !== shown;
     if (focus) tabs[selected]?.focus();
     place();
     if (notify) options.onSelect?.(selected, tabs[selected]!);
