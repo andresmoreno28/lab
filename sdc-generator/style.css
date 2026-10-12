@@ -1,0 +1,269 @@
+/* SDC generator (lab). Form on the left, files on the right when the stage is wide. */
+@layer components {
+  .sdc {
+    display: grid;
+    gap: 24px;
+  }
+
+  .sdc__form {
+    display: grid;
+    gap: 20px;
+  }
+
+  .sdc__head {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: 12px 16px;
+  }
+
+  .sdc__field:not([hidden]) {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+  }
+
+  .sdc__field--wide {
+    grid-column: 1 / -1;
+  }
+
+  .sdc__field label {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .sdc__input {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 8px;
+    background: rgb(0 0 0 / 0.25);
+    color: var(--color-display-cream);
+    font-size: var(--size-small);
+  }
+
+  .sdc__input option {
+    background: var(--color-bg-dark);
+  }
+
+  .sdc__input[aria-invalid='true'] {
+    border-color: var(--color-lab-bad);
+  }
+
+  .sdc__error {
+    min-height: 0;
+    color: var(--color-error-text);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .sdc__error:empty {
+    display: none;
+  }
+
+  .sdc__group {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 14px 0 0;
+    border: 0;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .sdc__group legend {
+    padding: 0 0 6px;
+    color: var(--color-gold-text);
+    font-size: var(--size-small);
+    font-weight: 600;
+  }
+
+  .sdc__list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sdc__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
+    align-items: end;
+    gap: 8px 10px;
+    padding: 12px 48px 12px 12px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.03);
+    animation: sdc-in 350ms var(--ease-out);
+  }
+
+  .sdc__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+    cursor: pointer;
+  }
+
+  .sdc__check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-gold);
+  }
+
+  .sdc__remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-on-dark-muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    .sdc__remove:hover {
+      background: rgb(255 255 255 / 0.08);
+      color: var(--color-display-cream);
+    }
+  }
+
+  .sdc__add {
+    justify-self: start;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px dashed color-mix(in oklab, var(--color-gold) 70%, transparent);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-gold-text);
+    font-size: var(--size-small);
+    cursor: pointer;
+  }
+
+  .sdc__output {
+    align-self: start;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 12px;
+    background: rgb(0 0 0 / 0.25);
+  }
+
+  .sdc__tabs {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    /* A thin bar, so a phone shows there are more files to the right. */
+    scrollbar-width: thin;
+  }
+
+  .sdc__tab {
+    flex: none;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    color: var(--color-on-dark);
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+
+  .sdc__tab[aria-selected='true'] {
+    color: var(--color-gold-text);
+  }
+
+  .sdc__tab:focus-visible {
+    outline-offset: -4px;
+  }
+
+  .sdc__indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--tab-w, 0);
+    height: 2px;
+    background: var(--color-gold);
+    translate: var(--tab-x, 0) 0;
+    transition:
+      translate 400ms var(--ease-out),
+      width 400ms var(--ease-out);
+  }
+
+  .sdc__panel:not([hidden]) {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px 16px;
+  }
+
+  .sdc__code {
+    max-height: 640px;
+    margin: 0;
+    overflow: auto;
+    color: var(--color-code-plain);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  .sdc[data-invalid] .sdc__code {
+    opacity: 0.55;
+  }
+
+  .sdc__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sdc__copy {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(100deg, var(--color-gold-button-from), var(--color-gold-button-to));
+    color: var(--color-button-text);
+    font-size: var(--size-small);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .sdc__copied {
+    color: var(--color-lab-ok);
+    font-size: var(--size-small);
+  }
+
+  @keyframes sdc-in {
+    from {
+      opacity: 0;
+      translate: 0 -6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sdc__item {
+      animation: none;
+    }
+
+    .sdc__indicator {
+      transition: none;
+    }
+  }
+
+  @container lab-stage (width >= 900px) {
+    .sdc {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .sdc__output {
+      position: sticky;
+      top: calc(var(--header-h, 64px) + 16px);
+    }
+  }
+}

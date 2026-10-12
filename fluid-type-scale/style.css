@@ -1,0 +1,200 @@
+/* Fluid type scale (lab). */
+@layer components {
+  .ft {
+    display: grid;
+    gap: 24px;
+  }
+
+  .ft__inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: 14px 18px;
+  }
+
+  .ft__error {
+    grid-column: 1 / -1;
+    color: var(--color-error-text);
+    font-size: var(--size-small);
+  }
+
+  .ft__field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .ft__field label,
+  .ft__width-row label {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .ft__number,
+  .ft__select {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 10px;
+    background: rgb(0 0 0 / 0.25);
+    color: var(--color-display-cream);
+    font-size: var(--size-small);
+  }
+
+  .ft__number[aria-invalid] {
+    border-color: var(--color-error);
+  }
+
+  .ft__select option {
+    background: var(--color-bg-dark);
+  }
+
+  .ft__stage {
+    display: grid;
+    gap: 14px;
+  }
+
+  .ft__width-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ft__range {
+    width: 100%;
+    min-height: 32px;
+    accent-color: var(--color-gold);
+  }
+
+  .ft__width {
+    min-width: 5ch;
+    color: var(--color-display-cream);
+    font-size: var(--size-meta);
+    text-align: end;
+  }
+
+  /* The preview is a page as wide as the slider says, drawn at the stage's scale. */
+  .ft__preview {
+    --preview-w: 0.5;
+    width: 100%;
+    max-height: 420px;
+    overflow: hidden;
+    padding: 18px 20px;
+    border-radius: 12px;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transition: width 200ms var(--ease-out);
+  }
+
+  .ft__lines {
+    display: grid;
+    gap: 6px;
+  }
+
+  .ft__line {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 12px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .ft__step,
+  .ft__px {
+    color: var(--color-ink-muted);
+    font-size: 11px;
+  }
+
+  .ft__sample {
+    overflow: hidden;
+    font-size: var(--size, 16px);
+    font-family: var(--font-display, inherit);
+    font-weight: 700;
+    text-overflow: ellipsis;
+  }
+
+  .ft__chart {
+    width: 100%;
+    height: 140px;
+    border-radius: 10px;
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .ft__band {
+    fill: rgb(255 255 255 / 0.04);
+  }
+
+  .ft__curve {
+    fill: none;
+    stroke: color-mix(
+      in oklab,
+      var(--color-gold) calc(40% + var(--i) * 8%),
+      var(--color-annotation-blue)
+    );
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .ft__marker {
+    stroke: var(--color-display-cream);
+    stroke-dasharray: 4 4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .ft__out {
+    display: grid;
+    gap: 10px;
+  }
+
+  .ft__code {
+    max-height: 260px;
+    margin: 0;
+    overflow: auto;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: rgb(0 0 0 / 0.3);
+    color: var(--color-code-plain);
+    font-size: var(--size-meta);
+    line-height: 1.6;
+  }
+
+  .ft__actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .ft__copy {
+    min-height: 44px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(100deg, var(--color-gold-button-from), var(--color-gold-button-to));
+    color: var(--color-button-text);
+    font-size: var(--size-small);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .ft__status {
+    color: var(--color-lab-ok);
+    font-size: var(--size-small);
+  }
+
+  /* Six fields: two rows of three, never five and one left alone. */
+  @container lab-stage (width >= 640px) {
+    .ft__inputs {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ft__preview {
+      width: calc(40% + 60% * var(--preview-w));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft__preview {
+      transition: none;
+    }
+  }
+}

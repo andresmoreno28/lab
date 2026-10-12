@@ -1,0 +1,435 @@
+/* Contrast checker (lab). Lives on the dark lab stage (shared/stage.css). */
+@layer components {
+  .cc {
+    --cc-ok: var(--color-lab-ok);
+    --cc-bad: var(--color-lab-bad);
+    display: grid;
+    gap: 28px;
+  }
+
+  .cc__checker {
+    display: grid;
+    gap: 18px;
+  }
+
+  .cc__fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    align-items: end;
+  }
+
+  .cc__label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .cc__inputs {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cc__picker {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    padding: 3px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .cc__hex {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 10px;
+    background: rgb(0 0 0 / 0.25);
+    color: var(--color-display-cream);
+    font-size: var(--size-body);
+    text-transform: lowercase;
+  }
+
+  .cc__hex[aria-invalid] {
+    border-color: var(--color-error);
+  }
+
+  .cc__swap {
+    display: grid;
+    place-items: center;
+    justify-self: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--color-gold);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-gold-text);
+    cursor: pointer;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .cc__swap:active {
+    transform: rotate(180deg);
+  }
+
+  /* The sample takes the two colours being checked. */
+  .cc__sample {
+    display: grid;
+    gap: 6px;
+    padding: 22px 20px;
+    border-radius: 12px;
+    background: var(--cc-background);
+    color: var(--cc-text);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+    transition:
+      background-color 300ms var(--ease-out),
+      color 300ms var(--ease-out);
+  }
+
+  .cc__sample-large {
+    font-family: var(--font-display, inherit);
+    font-size: clamp(24px, 4cqi, 32px);
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  .cc__sample-small {
+    font-size: var(--size-small);
+    line-height: 1.5;
+  }
+
+  .cc__result {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
+  }
+
+  .cc__gauge {
+    --cc-level: var(--cc-bad);
+    position: relative;
+    width: 120px;
+    aspect-ratio: 1;
+  }
+
+  .cc__gauge[data-level='large'] {
+    --cc-level: var(--color-gold);
+  }
+
+  .cc__gauge[data-level='aa'],
+  .cc__gauge[data-level='aaa'] {
+    --cc-level: var(--cc-ok);
+  }
+
+  .cc__gauge svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cc__track,
+  .cc__arc {
+    fill: none;
+    stroke-width: 8;
+  }
+
+  .cc__track {
+    stroke: rgb(255 255 255 / 0.08);
+  }
+
+  .cc__arc {
+    stroke: var(--cc-level);
+    stroke-linecap: round;
+    transition:
+      stroke-dashoffset 600ms var(--ease-out),
+      stroke 300ms linear;
+  }
+
+  .cc__gauge-text {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    text-align: center;
+  }
+
+  .cc__ratio {
+    color: var(--color-display-cream);
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cc__gauge-label,
+  .cc__apca {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .cc__apca {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .cc__apca .t-mono {
+    color: var(--color-display-cream);
+  }
+
+  .cc__levels {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cc__level {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .cc__badges {
+    display: flex;
+    gap: 6px;
+  }
+
+  .cc__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.06);
+    color: var(--color-on-dark);
+    font-size: var(--size-meta);
+    font-weight: 600;
+  }
+
+  .cc__level-name {
+    min-width: 10em;
+  }
+
+  /* ✓ or ✕: the state has a shape, not only a colour. */
+  .cc__badge-mark {
+    color: var(--cc-bad);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .cc__badge[data-pass='true'] {
+    background: color-mix(in oklab, var(--cc-ok) 18%, transparent);
+    color: var(--color-display-cream);
+  }
+
+  .cc__badge[data-pass='true'] .cc__badge-mark {
+    color: var(--cc-ok);
+  }
+
+  .cc__fix {
+    padding: 14px 16px;
+    border: 1px dashed color-mix(in oklab, var(--color-gold) 60%, transparent);
+    border-radius: 12px;
+  }
+
+  .cc__fix-text {
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .cc__fix-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    color: var(--color-display-cream);
+  }
+
+  .cc__fix-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+  }
+
+  .cc__fix-use {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(100deg, var(--color-gold-button-from), var(--color-gold-button-to));
+    color: var(--color-button-text);
+    font-size: var(--size-small);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .cc__palette {
+    display: grid;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .cc__palette-edit {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+
+  .cc__hint {
+    margin-top: -4px;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .cc__palette-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 10px;
+    background: rgb(0 0 0 / 0.25);
+    color: var(--color-display-cream);
+    font-size: var(--size-small);
+    resize: vertical;
+  }
+
+  .cc__matrix-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+  }
+
+  .cc__matrix {
+    border-collapse: separate;
+    border-spacing: 4px;
+    font-size: var(--size-meta);
+  }
+
+  .cc__matrix-col {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .cc__caption {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .cc__matrix th {
+    padding: 4px 6px;
+    color: var(--color-on-dark);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .cc__chip {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-inline-end: 6px;
+    border-radius: 3px;
+    background: var(--chip);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+    vertical-align: -1px;
+  }
+
+  /* Each cell: the pair itself (a line of «text» on the background) and its ratio. */
+  .cc__cell {
+    display: grid;
+    gap: 4px;
+    justify-items: center;
+    width: 64px;
+    padding: 8px 4px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--bg);
+    cursor: pointer;
+    animation: cc-cell 500ms var(--ease-out) both;
+    animation-delay: calc(var(--i) * 25ms);
+  }
+
+  .cc__cell:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+
+  .cc__cell-ink {
+    width: 70%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--fg);
+  }
+
+  .cc__cell-ratio {
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+    background: rgb(13 19 19 / 0.85);
+    color: var(--color-display-cream);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cc__cell--fail .cc__cell-ratio {
+    color: var(--color-error-text);
+  }
+
+  .cc__cell--aa .cc__cell-ratio,
+  .cc__cell--aaa .cc__cell-ratio {
+    box-shadow: inset 0 0 0 1px var(--cc-ok);
+  }
+
+  @keyframes cc-cell {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cc__cell {
+      animation: none;
+    }
+
+    .cc__arc,
+    .cc__sample,
+    .cc__swap {
+      transition: none;
+    }
+  }
+
+  .cc__result-side {
+    max-width: 460px;
+  }
+
+  @container lab-stage (width >= 760px) {
+    .cc__palette {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: 24px;
+    }
+  }
+
+  @container lab-stage (width >= 560px) {
+    .cc__fields {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    }
+
+    .cc__result {
+      grid-template-columns: 140px minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    .cc__gauge {
+      width: 140px;
+    }
+  }
+}
