@@ -1,0 +1,201 @@
+/* Depth card (lab). Depth is translateZ inside a preserve-3d card; --spread pulls it apart. */
+@layer components {
+  .dc {
+    display: grid;
+    gap: 20px;
+  }
+
+  .dc__scene {
+    display: grid;
+    place-items: center;
+    min-height: 380px;
+    padding: 32px 16px;
+    perspective: 900px;
+  }
+
+  .dc__card {
+    --rx: 0deg;
+    --ry: 0deg;
+    --lx: 50%;
+    --ly: 30%;
+    --spread: 1;
+    position: relative;
+    width: min(100%, 360px);
+    aspect-ratio: 4 / 3;
+    border-radius: 18px;
+    background: var(--color-paper);
+    box-shadow: 0 30px 60px rgb(0 0 0 / 0.45);
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transform-style: preserve-3d;
+    transition:
+      transform 700ms var(--ease-out),
+      box-shadow 700ms var(--ease-out);
+    outline-offset: 8px;
+  }
+
+  /* Following the pointer: a short transition, so it tracks without lag. */
+  .dc__card[data-live] {
+    transition: transform 120ms linear;
+  }
+
+  .dc__card[data-exploded] {
+    --spread: 3.2;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+    transform: rotateX(22deg) rotateY(-34deg) scale(0.86);
+  }
+
+  /*
+   * Every layer: its depth (--dc-z, px at rest, × --spread) and a scale that cancels the growth the
+   * perspective (900 px) gives it, so each one keeps the card's size and only its parallax shows.
+   */
+  .dc__layer,
+  .dc__glare {
+    --dc-z: 0;
+    transform: translateZ(calc(var(--dc-z) * var(--spread) * 1px))
+      scale(calc(1 - var(--dc-z) * var(--spread) / 900));
+  }
+
+  .dc__layer {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    transition: transform 700ms var(--ease-out);
+  }
+
+  .dc__sky {
+    background: linear-gradient(
+      170deg,
+      var(--color-paper),
+      color-mix(in oklab, var(--color-gold-text) 55%, var(--color-paper))
+    );
+    --dc-z: 0;
+  }
+
+  .dc__sun {
+    inset: 14% auto auto 62%;
+    width: 22%;
+    aspect-ratio: 1;
+    height: auto;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 40% 35%,
+      var(--color-gold-button-from),
+      var(--color-gold)
+    );
+    box-shadow: 0 0 40px color-mix(in oklab, var(--color-gold) 60%, transparent);
+    --dc-z: 10;
+  }
+
+  .dc__layer:is(.dc__far, .dc__near) {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .dc__far {
+    fill: var(--color-annotation-blue);
+    filter: drop-shadow(0 -2px 3px rgb(0 0 0 / 0.15));
+    --dc-z: 22;
+  }
+
+  .dc__near {
+    fill: var(--color-bg-dark);
+    filter: drop-shadow(0 -3px 4px rgb(0 0 0 / 0.25));
+    --dc-z: 38;
+  }
+
+  .dc__text {
+    inset: auto 0 0;
+    padding: 0 22px 18px;
+    --dc-z: 58;
+  }
+
+  .dc__title {
+    color: var(--color-display-cream);
+    font-family: var(--font-display, inherit);
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  .dc__copy {
+    margin-top: 4px;
+    color: var(--color-on-dark);
+    font-size: var(--size-meta);
+    line-height: 1.4;
+  }
+
+  .dc__badge {
+    inset: 16px auto auto 16px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    color: var(--color-gold-text);
+    box-shadow: 0 6px 14px rgb(0 0 0 / 0.3);
+    --dc-z: 72;
+  }
+
+  /*
+   * Light on a glossy surface: brightest where the pointer is. A plain translucent layer, not a
+   * blend mode: mix-blend-mode on a child flattens the card's preserve-3d and the layers would
+   * stop having depth.
+   */
+  .dc__glare {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: radial-gradient(
+      circle at var(--lx) var(--ly),
+      rgb(255 255 255 / 0.28),
+      rgb(255 255 255 / 0.05) 35%,
+      transparent 60%
+    );
+    pointer-events: none;
+    --dc-z: 80;
+    transition: opacity 400ms var(--ease-out);
+  }
+
+  .dc__card[data-no-glare] .dc__glare,
+  .dc__card[data-exploded] .dc__glare {
+    opacity: 0;
+  }
+
+  /* Exploded: each layer shows its edge, like sheets of card held apart. */
+  .dc__card[data-exploded] .dc__layer {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-gold) 50%, transparent);
+  }
+
+  .dc__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 24px;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .dc__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .dc__check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dc__card,
+    .dc__layer,
+    .dc__glare {
+      transition: none;
+    }
+  }
+}

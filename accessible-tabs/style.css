@@ -1,0 +1,128 @@
+/* Accessible tabs (lab). */
+@layer components {
+  .at {
+    display: grid;
+    gap: 16px;
+  }
+
+  .at__hint {
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-small);
+  }
+
+  .at__window {
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 12px;
+    background: rgb(0 0 0 / 0.2);
+  }
+
+  .at__list {
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    scrollbar-width: none;
+  }
+
+  .at__tab {
+    flex: none;
+    min-height: 48px;
+    padding: 0 22px;
+    border: 0;
+    background: transparent;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+    cursor: pointer;
+    transition: color 300ms var(--ease-out);
+  }
+
+  .at__tab[aria-selected='true'] {
+    color: var(--color-gold-text);
+  }
+
+  .at__tab:focus-visible {
+    outline-offset: -4px;
+  }
+
+  /* Slides and stretches to the selected tab (shared/tabs.ts writes --tab-x and --tab-w). */
+  .at__indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--tab-w, 0);
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(90deg, var(--color-gold-button-from), var(--color-gold));
+    box-shadow: 0 0 16px color-mix(in oklab, var(--color-gold) 70%, transparent);
+    translate: var(--tab-x, 0) 0;
+    transition:
+      translate 450ms var(--ease-out),
+      width 450ms var(--ease-out);
+  }
+
+  /* The panel scrolls sideways and takes the focus (tabindex), so the keyboard can scroll it. */
+  .at__panel {
+    overflow-x: auto;
+    padding: 18px 20px;
+    animation: at-panel 400ms var(--ease-out);
+  }
+
+  .at__code {
+    margin: 0;
+    color: var(--color-code-plain);
+    font-size: var(--size-meta);
+    line-height: 1.6;
+    white-space: pre;
+  }
+
+  @keyframes at-panel {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  .at__mode {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .at__mode legend {
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .at__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .at__option input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .at__indicator,
+    .at__tab {
+      transition: none;
+    }
+
+    .at__panel {
+      animation: none;
+    }
+  }
+}

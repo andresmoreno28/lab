@@ -1,0 +1,236 @@
+/* Accessible button (lab). */
+@layer components {
+  .ab {
+    display: grid;
+    gap: 24px;
+  }
+
+  .ab__stage {
+    display: grid;
+    place-items: center;
+    gap: 16px;
+    min-height: 220px;
+    border-radius: 12px;
+    background:
+      radial-gradient(circle at 50% 45%, rgb(255 255 255 / 0.06), transparent 60%),
+      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 24px);
+  }
+
+  .ab__slot {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  .ab__button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 28px;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(100deg, var(--color-gold-button-from), var(--color-gold-button-to));
+    color: var(--color-button-text);
+    font-size: var(--size-body);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.35) inset,
+      0 10px 24px rgb(0 0 0 / 0.35);
+    cursor: pointer;
+    transition:
+      transform 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out),
+      background 400ms var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .ab__button:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.35) inset,
+        0 14px 30px rgb(0 0 0 / 0.4);
+    }
+  }
+
+  .ab__button:active {
+    transform: scale(0.97);
+  }
+
+  /* The site's focus ring, on the gold of the dark surfaces, clear of the button. */
+  .ab__button:focus-visible {
+    outline: 3px solid var(--color-gold-text);
+    outline-offset: 4px;
+  }
+
+  .ab__button[aria-disabled='true'] {
+    background: rgb(255 255 255 / 0.12);
+    color: var(--color-on-dark);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .ab__spinner,
+  .ab__tick {
+    display: none;
+  }
+
+  .ab__button[data-state='sending'] .ab__icon,
+  .ab__button[data-state='sent'] .ab__icon {
+    display: none;
+  }
+
+  .ab__button[data-state='sending'] .ab__spinner {
+    display: block;
+    animation: ab-spin 900ms linear infinite;
+  }
+
+  .ab__button[data-state='sent'] {
+    background: linear-gradient(
+      100deg,
+      var(--color-lab-ok),
+      color-mix(in oklab, var(--color-lab-ok) 70%, var(--color-gold))
+    );
+  }
+
+  .ab__button[data-state='sent'] .ab__tick {
+    display: block;
+  }
+
+  .ab__tick path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: ab-draw 500ms 100ms var(--ease-out) forwards;
+  }
+
+  .ab__ripple {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.55);
+    pointer-events: none;
+    animation: ab-ripple 650ms var(--ease-out) forwards;
+  }
+
+  /* The pressable area, drawn on demand: the button's box and the 24 px minimum inside it. */
+  .ab__target {
+    position: absolute;
+    inset: -1px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--color-annotation-blue);
+    border-radius: var(--radius-pill);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 300ms var(--ease-out),
+      inset 300ms var(--ease-out);
+  }
+
+  .ab__target-min {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--color-lab-bad);
+    border-radius: 3px;
+  }
+
+  .ab__stage[data-target] .ab__target {
+    inset: -10px;
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .ab__why {
+    max-width: 30ch;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+    text-align: center;
+  }
+
+  .ab__again {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    color: var(--color-gold-text);
+    font-size: var(--size-small);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+
+  .ab__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-on-dark);
+    font-size: var(--size-small);
+  }
+
+  .ab__controls legend {
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--color-on-dark-muted);
+    font-size: var(--size-meta);
+  }
+
+  .ab__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .ab__check input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-gold);
+  }
+
+  @keyframes ab-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @keyframes ab-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes ab-ripple {
+    to {
+      opacity: 0;
+      transform: scale(40);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ab__button,
+    .ab__target {
+      transition: none;
+    }
+
+    .ab__button[data-state='sending'] .ab__spinner {
+      animation-duration: 2.4s;
+    }
+
+    .ab__tick path {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+}
